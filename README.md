@@ -52,7 +52,7 @@ Successful response:
 
 ```json
 {
-  "short_url": "http://localhost:8080/1"
+  "short_url": "https://short-link-production-615e.up.railway.app/1"
 }
 ```
 
@@ -67,7 +67,7 @@ Content-Type: application/json
 
 ```json
 {
-  "short_url": "http://localhost:8080/1"
+  "short_url": "https://short-link-production-615e.up.railway.app/1"
 }
 ```
 
@@ -167,6 +167,12 @@ The app reads configuration from environment variables:
 | `DATABASE_URL` | `postgres://postgres:postgres@localhost:5432/url_shortener?sslmode=disable` | PostgreSQL connection string |
 | `BASE_URL` | `http://localhost:8080` | Base URL used when constructing short URLs |
 | `PORT` | `8080` | HTTP port for the server |
+
+In production, the service is deployed at:
+
+https://short-link-production-615e.up.railway.app
+
+This value is used as the BASE_URL for generating short links.
 
 ## Attack Vectors
 

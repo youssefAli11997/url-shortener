@@ -41,12 +41,22 @@ make docker-down
 
 PostgreSQL data is stored in the `postgres_data` Docker volume. As a result, encoded URLs remain available even after the API container is restarted or recreated.
 
+Production deployment:
+
+https://short-link-production-615e.up.railway.app
+
 ## Try the API
 
 ### Verify the service is healthy:
 
+Locally:
 ```sh
 curl http://localhost:8080/healthz
+```
+
+Production:
+```sh
+curl https://short-link-production-615e.up.railway.app/healthz
 ```
 
 Example response:
@@ -59,8 +69,16 @@ Example response:
 
 ### Encode a URL:
 
+Locally:
 ```sh
 curl -s -X POST http://localhost:8080/encode \
+  -H 'Content-Type: application/json' \
+  -d '{"url":"https://codesubmit.io/library/react"}'
+```
+
+Production:
+```sh
+curl -s -X POST https://short-link-production-615e.up.railway.app/encode \
   -H 'Content-Type: application/json' \
   -d '{"url":"https://codesubmit.io/library/react"}'
 ```
@@ -75,10 +93,18 @@ Example response:
 
 ### Decode the short URL:
 
+Locally:
 ```sh
 curl -s -X POST http://localhost:8080/decode \
   -H 'Content-Type: application/json' \
   -d '{"short_url":"http://localhost:8080/1"}'
+```
+
+Production:
+```sh
+curl -s -X POST https://short-link-production-615e.up.railway.app/decode \
+  -H 'Content-Type: application/json' \
+  -d '{"short_url":"https://short-link-production-615e.up.railway.app/1"}'
 ```
 
 Example response:
