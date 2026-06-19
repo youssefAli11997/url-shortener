@@ -46,7 +46,16 @@ func TestURLHandler_Encode(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 		},
 		{
-			name: "failed to encode",
+			name: "invalid url",
+			requestBody: model.EncodeRequest{
+				URL: "invalid",
+			},
+			mockResponse:   "",
+			mockError:      model.ErrInvalidURL,
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name: "unexpected encode error",
 			requestBody: model.EncodeRequest{
 				URL: "https://google.com",
 			},
@@ -126,9 +135,27 @@ func TestURLHandler_Decode(t *testing.T) {
 		},
 
 		{
-			name: "failed to decode",
-			requestBody: model.EncodeRequest{
-				URL: "http://short/abc",
+			name: "invalid url",
+			requestBody: model.DecodeRequest{
+				ShortURL: "bad-short-url",
+			},
+			mockResponse:   "",
+			mockError:      model.ErrInvalidURL,
+			expectedStatus: http.StatusBadRequest,
+		},
+		{
+			name: "url not found",
+			requestBody: model.DecodeRequest{
+				ShortURL: "http://short/missing",
+			},
+			mockResponse:   "",
+			mockError:      model.ErrURLNotFound,
+			expectedStatus: http.StatusNotFound,
+		},
+		{
+			name: "unexpected decode error",
+			requestBody: model.DecodeRequest{
+				ShortURL: "http://short/abc",
 			},
 			mockResponse:   "",
 			mockError:      fmt.Errorf("failed to decode"),

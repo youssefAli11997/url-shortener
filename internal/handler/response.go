@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"url-shortener/internal/model"
@@ -24,4 +25,15 @@ func writeError(w http.ResponseWriter, status int, err error) {
 	writeJSON(w, status, model.ErrorResponse{
 		Error: err.Error(),
 	})
+}
+
+func writeServiceError(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, model.ErrInvalidURL):
+		writeError(w, http.StatusBadRequest, model.ErrInvalidURL)
+	case errors.Is(err, model.ErrURLNotFound):
+		writeError(w, http.StatusNotFound, model.ErrURLNotFound)
+	default:
+		writeError(w, http.StatusInternalServerError, model.ErrInternalServerError)
+	}
 }

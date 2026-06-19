@@ -28,7 +28,7 @@ func (h *URLHandler) Encode(w http.ResponseWriter, r *http.Request) {
 
 	shortURL, err := h.service.Encode(r.Context(), req.URL)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, model.ErrInternalServerError)
+		writeServiceError(w, err)
 		return
 	}
 
@@ -47,11 +47,21 @@ func (h *URLHandler) Decode(w http.ResponseWriter, r *http.Request) {
 
 	url, err := h.service.Decode(r.Context(), req.ShortURL)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, model.ErrInternalServerError)
+		writeServiceError(w, err)
 		return
 	}
 
 	writeJSON(w, http.StatusOK, model.DecodeResponse{
 		URL: url,
 	})
+}
+
+func (h *URLHandler) Healthz(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	_ = json.NewEncoder(w).Encode(
+		model.HealthzResponse{
+			Status: "ok",
+		},
+	)
 }

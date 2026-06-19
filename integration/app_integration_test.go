@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -87,6 +88,31 @@ func setupApp(t *testing.T) (*httptest.Server, func()) {
 	}
 
 	return server, cleanup
+}
+
+func TestHealthz(t *testing.T) {
+	server, cleanup := setupApp(t)
+	defer cleanup()
+
+	resp, err := http.Get(server.URL + "/healthz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+
+	var body map[string]string
+
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		t.Fatal(err)
+	}
+
+	if body["status"] != "ok" {
+		t.Fatalf("expected status=ok, got %q", body["status"])
+	}
 }
 
 func TestEncodeDecode(t *testing.T) {
@@ -202,5 +228,63 @@ func TestEncodeIdempotency(t *testing.T) {
 			first,
 			second,
 		)
+	}
+}
+
+func TestErrorCases(t *testing.T) {
+	tests := []struct {
+		name       string
+		endpoint   string
+		body       string
+		statusCode int
+	}{
+		{
+			name:       "invalid url",
+			endpoint:   "/encode",
+			body:       `{"url":"invalid"}`,
+			statusCode: http.StatusBadRequest,
+		},
+		{
+			name:       "decode not found",
+			endpoint:   "/decode",
+			body:       `{"short_url":"http://localhost:8080/abc"}`,
+			statusCode: http.StatusNotFound,
+		},
+	}
+
+	server, cleanup := setupApp(t)
+	defer cleanup()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			resp, err := http.Post(
+				server.URL+tt.endpoint,
+				"application/json",
+				strings.NewReader(tt.body),
+			)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer resp.Body.Close()
+
+			if resp.StatusCode != tt.statusCode {
+				t.Fatalf(
+					"expected %d got %d",
+					tt.statusCode,
+					resp.StatusCode,
+				)
+			}
+
+			var response map[string]string
+
+			if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+				t.Fatal(err)
+			}
+
+			if response["error"] == "" {
+				t.Fatal("expected error message")
+			}
+		})
 	}
 }

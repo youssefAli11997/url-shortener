@@ -7,7 +7,7 @@ docker-down:
 	docker compose down
 
 test:
-	go test ./...
+	go test ./... -cover
 
 test-integration:
-	go test -tags=integration ./...
+	go test -tags=integration ./integration -count=1

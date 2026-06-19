@@ -19,3 +19,7 @@ type DecodeResponse struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+type HealthzResponse struct {
+	Status string `json:"status"`
+}

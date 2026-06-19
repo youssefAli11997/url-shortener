@@ -94,10 +94,16 @@ The API will be available at `http://localhost:8080`.
 
 ## Tests
 
-Run all tests:
+Run all unit tests:
 
 ```sh
 go test ./...
+```
+
+Run the integration test:
+
+```sh
+go test -tags=integration ./integration -count=1
 ```
 
 The test suite includes:

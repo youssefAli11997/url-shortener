@@ -101,7 +101,7 @@ go run ./cmd/server
 
 ## Run Tests
 
-Run the full suite:
+Run all unit tests:
 
 ```sh
 go test ./...
@@ -115,10 +115,10 @@ go test ./internal/handler
 go test ./internal/shortener
 ```
 
-Run only the integration test:
+Run the integration test:
 
 ```sh
-go test ./integration -count=1 -v
+go test -tags=integration ./integration -count=1
 ```
 
 The integration test uses Testcontainers to start PostgreSQL, so Docker must be running.

@@ -32,14 +32,15 @@ func NewApp(ctx context.Context, config *config.Config) (*App, error) {
 		return nil, err
 	}
 
-	repo := repository.NewPostgresURLRepository(db)
-	svc := service.NewURLService(repo, config.BaseURL)
-	h := handler.NewURLHandler(svc)
+	repository := repository.NewPostgresURLRepository(db)
+	service := service.NewURLService(repository, config.BaseURL)
+	handler := handler.NewURLHandler(service)
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /encode", h.Encode)
-	mux.HandleFunc("POST /decode", h.Decode)
+	mux.HandleFunc("POST /encode", handler.Encode)
+	mux.HandleFunc("POST /decode", handler.Decode)
+	mux.HandleFunc("GET /healthz", handler.Healthz)
 
 	serverHandler := middleware.Recover(
 		middleware.Logging(mux),
