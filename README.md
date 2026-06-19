@@ -1,4 +1,4 @@
-# URL Shortener
+# ShortLink
 
 A small URL shortening service written in Go. It exposes two JSON endpoints:
 

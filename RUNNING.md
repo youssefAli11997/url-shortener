@@ -1,4 +1,4 @@
-# Running URL Shortener
+# Running ShortLink
 
 This file contains the detailed setup instructions for running and testing the URL shortener locally.
 
